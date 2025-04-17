@@ -1,21 +1,117 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
-  <title>나만의 이미지 보기</title>
+  <title>Petpresso 반려동물 프로필 사진</title>
   <style>
-    body { text-align: center; margin-top: 50px; font-family: sans-serif; }
-    img { max-width: 90%; height: auto; }
-    #download-button {
+    @font-face {
+      font-family: 'NanumSquareRound';
+      src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    header {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* ✅ 로고와 텍스트 수직 가운데 정렬 */
+      text-align: center;
+    }
+
+    body {
+      margin: 0;
+      padding: 0 20px;
+      font-family: 'NanumSquareRound', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #b3d3ff, #d3b6ff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    #logo {
+      height: 100px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      background: rgba(255, 255, 255, 0.25);
+      /* ✅ 밝은 투명 배경 */
+      padding: 16px 32px;
+      border-radius: 30px;
+      color: #fff;
+      font-size: 1.5rem;
+      display: inline-block;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    #image-container {
       margin-top: 20px;
+      max-width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    #image-container img {
+      max-width: 300px;
+      /* ✅ 최대 너비 제한 (적절한 디스플레이용 크기) */
+      width: 80%;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    #download-button {
+      margin-top: 30px;
       display: none;
+    }
+
+    #download-link button {
+      background: linear-gradient(135deg, #7d77ff, #a072ff);
+      /* ✅ 그라데이션 배경 */
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+      /* ✅ 글자 테두리 효과 (밝은 배경 대비 강조용) */
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    #download-link button:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
     }
   </style>
 </head>
+
 <body>
-  <h1>🎁 당신만을 위한 이미지</h1>
+
+  <!-- ✅ 로고 & 제목 영역 -->
+  <header>
+    <img id="logo" src="images/logo.png" alt="로고">
+    <h1>💙 펫프레소 반려동물 프로필 사진 💙</h1>
+  </header>
+
   <div id="image-container">
-    <p>로딩 중입니다...</p>
+    <p style="color: white;">로딩 중입니다...</p>
   </div>
 
   <div id="download-button">
@@ -26,4 +122,5 @@
 
   <script src="js/viewer.js"></script>
 </body>
+
 </html>

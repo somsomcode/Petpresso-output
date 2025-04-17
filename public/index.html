@@ -3,13 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <title>이미지 업로드</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; text-align: center; }
+    #result { margin-top: 30px; display: none; }
+    input[type="text"] { width: 200px; }
+    #image-list { margin-top: 20px; }
+    .item {
+      margin-bottom: 12px;
+    }
+    .item button {
+      margin-left: 10px;
+    }
+  </style>
 </head>
 <body>
-  <h2>사용자 이미지 업로드</h2>
-  <form action="/upload" method="POST" enctype="multipart/form-data">
+  <h2>사용자 전달용 이미지 업로드</h2>
+
+  <form id="upload-form" enctype="multipart/form-data">
     사용자 ID: <input type="text" name="userId" required><br><br>
     이미지 선택: <input type="file" name="image" accept="image/*" required><br><br>
     <button type="submit">업로드</button>
   </form>
+
+  <div id="result">
+    <p>✅ 업로드 완료! 아래 링크를 복사해 사용자에게 전달하세요:</p>
+    <input id="result-link" type="text" readonly style="width: 300px;">
+    <button onclick="copyLink()">복사</button>
+  </div>
+
+  <h3 style="margin-top: 60px;">📂 업로드된 이미지 목록</h3>
+  <div id="image-list">불러오는 중...</div>
+
+  <script>
+    const form = document.getElementById('upload-form');
+    const resultDiv = document.getElementById('result');
+    const resultInput = document.getElementById('result-link');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const userId = formData.get('userId');
+
+      const res = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (res.ok) {
+        const url = `${window.location.origin}/view.html?id=${userId}`;
+        resultInput.value = url;
+        resultDiv.style.display = 'block';
+        form.reset(); // 업로드 후 입력 초기화
+        loadImageList(); // 리스트 갱신
+      } else {
+        alert('❌ 업로드 실패! 서버 에러가 발생했습니다.');
+      }
+    });
+
+    function copyLink() {
+      const input = document.getElementById('result-link');
+      input.select();
+      document.execCommand('copy');
+      alert('📋 링크가 복사되었습니다!');
+    }
+
+    async function loadImageList() {
+      const listContainer = document.getElementById('image-list');
+      listContainer.innerHTML = '불러오는 중...';
+
+      try {
+        const res = await fetch('/list');
+        const data = await res.json();
+
+        if (!data || Object.keys(data).length === 0) {
+          listContainer.innerHTML = '<p>아직 업로드된 이미지가 없습니다.</p>';
+          return;
+        }
+
+        const html = Object.entries(data).map(([id, path]) => `
+          <div class="item">
+            <a href="/view.html?id=${id}" target="_blank">${id}</a>
+            (<a href="${path}" target="_blank">원본보기</a>)
+            <button onclick="deleteImage('${id}')">삭제</button>
+          </div>
+        `).join('');
+
+        listContainer.innerHTML = html;
+      } catch (error) {
+        console.error('❌ 리스트 불러오기 실패:', error);
+        listContainer.innerHTML = '<p>❌ 리스트 로딩 오류</p>';
+      }
+    }
+
+    async function deleteImage(id) {
+      if (!confirm(`정말 삭제하시겠습니까? (${id})`)) return;
+
+      try {
+        const res = await fetch('/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: id })
+        });
+
+        if (res.ok) {
+          alert('✅ 삭제 완료');
+          loadImageList();
+        } else {
+          alert('❌ 삭제 실패');
+        }
+      } catch (err) {
+        alert('❌ 삭제 중 오류 발생');
+        console.error(err);
+      }
+    }
+
+    // 초기 실행
+    loadImageList();
+  </script>
 </body>
 </html>
