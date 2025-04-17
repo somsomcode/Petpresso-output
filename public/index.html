@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>이미지 업로드</title>
+</head>
+<body>
+  <h2>사용자 이미지 업로드</h2>
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+    사용자 ID: <input type="text" name="userId" required><br><br>
+    이미지 선택: <input type="file" name="image" accept="image/*" required><br><br>
+    <button type="submit">업로드</button>
+  </form>
+</body>
+</html>

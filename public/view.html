@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>나만의 이미지 보기</title>
+  <style>
+    body { text-align: center; margin-top: 50px; font-family: sans-serif; }
+    img { max-width: 90%; height: auto; }
+    #download-button {
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎁 당신만을 위한 이미지</h1>
+  <div id="image-container">
+    <p>로딩 중입니다...</p>
+  </div>
+
+  <div id="download-button">
+    <a id="download-link" href="#" download>
+      <button>이미지 다운로드</button>
+    </a>
+  </div>
+
+  <script src="js/viewer.js"></script>
+</body>
+</html>
