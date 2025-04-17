@@ -4,18 +4,126 @@
   <meta charset="UTF-8">
   <title>이미지 업로드</title>
   <style>
-    body { font-family: sans-serif; padding: 40px; text-align: center; }
-    #result { margin-top: 30px; display: none; }
-    input[type="text"] { width: 200px; }
-    #image-list { margin-top: 20px; }
-    .item {
-      margin-bottom: 12px;
+    body {
+      font-family: sans-serif;
+      padding: 40px;
+      text-align: center;
+      background: #f9f9fb;
+      color: #333;
     }
-    .item button {
-      margin-left: 10px;
+
+    h2, h3 {
+      color: #444;
     }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      display: inline-block;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    input[type="text"], input[type="file"] {
+      width: 80%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      background: #5567ff;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3748d4;
+    }
+
+    #result {
+      margin-top: 30px;
+      display: none;
+      background: #e6f4ea;
+      border: 1px solid #c2e0cb;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #result input {
+      width: 80%;
+      padding: 8px;
+      margin-top: 10px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+    }
+
     #result button {
-      margin-left: 6px;
+      margin-left: 8px;
+      padding: 8px 16px;
+    }
+
+    #image-list {
+      margin-top: 40px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .item {
+      background: #fff;
+      padding: 16px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border-left: 4px solid #7d77ff;
+    }
+
+    .item strong {
+      font-size: 1.1em;
+      color: #333;
+    }
+
+    .item button {
+      background: #ff5f5f;
+      margin-top: 10px;
+    }
+
+    .item button:hover {
+      background: #d64444;
+    }
+
+    .sub-list {
+      margin-top: 12px;
+      font-size: 0.95em;
+      line-height: 1.5;
+      padding-left: 10px;
+    }
+
+    .sub-list u {
+      font-weight: bold;
+      color: #444;
+    }
+
+    a {
+      color: #3758ff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -23,19 +131,21 @@
   <h2>사용자 전달용 이미지 업로드</h2>
 
   <form id="upload-form" enctype="multipart/form-data">
-    사용자 ID: <input type="text" name="userId" required><br><br>
-    이미지 선택: <input type="file" name="image" accept="image/*" required><br><br>
-    <button type="submit">업로드</button>
+    사용자 ID:<br>
+    <input type="text" name="userId" required><br>
+    이미지 선택:<br>
+    <input type="file" name="image" accept="image/*" required><br>
+    <button type="submit">전달용 링크 생성하기</button>
   </form>
 
   <div id="result">
     <p>✅ 업로드 완료! 아래 링크를 복사하거나 바로 확인하세요:</p>
-    <input id="result-link" type="text" readonly style="width: 300px;">
+    <input id="result-link" type="text" readonly>
     <button onclick="copyLink()">복사</button>
     <button onclick="goToLink()">바로가기</button>
   </div>
 
-  <h3 style="margin-top: 60px;">📂 업로드된 이미지 목록</h3>
+  <h3>📂 사용자별 업로드 및 전달 링크 목록</h3>
   <div id="image-list">불러오는 중...</div>
 
   <script>
@@ -45,7 +155,6 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const formData = new FormData(form);
       const userId = formData.get('userId');
 
@@ -55,8 +164,8 @@
       });
 
       if (res.ok) {
-        const url = `${window.location.origin}/view.html?id=${userId}`;
-        resultInput.value = url;
+        const result = await res.json();
+        resultInput.value = window.location.origin + result.link;
         resultDiv.style.display = 'block';
         form.reset();
         loadImageList();
@@ -73,7 +182,7 @@
     }
 
     function goToLink() {
-      const url = document.getElementById('result-link').value;
+      const url = resultInput.value;
       if (url) window.open(url, '_blank');
     }
 
@@ -90,13 +199,31 @@
           return;
         }
 
-        const html = Object.entries(data).map(([id, path]) => `
-          <div class="item">
-            <a href="/view.html?id=${id}" target="_blank">${id}</a>
-            (<a href="${path}" target="_blank">원본보기</a>)
-            <button onclick="deleteImage('${id}')">삭제</button>
-          </div>
-        `).join('');
+        const html = Object.entries(data).map(([id, obj]) => {
+          const urls = obj.urls || [];
+          const files = obj.files || [];
+
+          const fileList = files.map(file => `
+            <div>📁 ${file}</div>
+          `).join('');
+
+          const urlList = urls.map(url => `
+            <div>🔗 <a href="${url}" target="_blank">${url}</a></div>
+          `).join('');
+
+          return `
+            <div class="item">
+              <strong>👤 사용자 ID: ${id}</strong>
+              <div class="sub-list">
+                <u>저장된 이미지 파일:</u><br>${fileList}
+              </div>
+              <div class="sub-list">
+                <u>전달용 링크:</u><br>${urlList}
+              </div>
+              <button onclick="deleteImage('${id}')">모두 삭제</button>
+            </div>
+          `;
+        }).join('');
 
         listContainer.innerHTML = html;
       } catch (error) {

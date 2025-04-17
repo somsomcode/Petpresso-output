@@ -16,15 +16,6 @@
       box-sizing: border-box;
     }
 
-    header {
-      margin-top: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      /* ✅ 로고와 텍스트 수직 가운데 정렬 */
-      text-align: center;
-    }
-
     body {
       margin: 0;
       padding: 0 20px;
@@ -39,6 +30,11 @@
     header {
       margin-top: 30px;
       text-align: center;
+
+      /* ✅ 가운데 정렬 복원 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     #logo {
@@ -48,7 +44,6 @@
 
     h1 {
       background: rgba(255, 255, 255, 0.25);
-      /* ✅ 밝은 투명 배경 */
       padding: 16px 32px;
       border-radius: 30px;
       color: #fff;
@@ -67,7 +62,6 @@
 
     #image-container img {
       max-width: 300px;
-      /* ✅ 최대 너비 제한 (적절한 디스플레이용 크기) */
       width: 80%;
       height: auto;
       border-radius: 20px;
@@ -81,7 +75,6 @@
 
     #download-link button {
       background: linear-gradient(135deg, #7d77ff, #a072ff);
-      /* ✅ 그라데이션 배경 */
       color: white;
       border: none;
       padding: 15px 40px;
@@ -90,8 +83,6 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-
-      /* ✅ 글자 테두리 효과 (밝은 배경 대비 강조용) */
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
 
@@ -104,7 +95,6 @@
 
 <body>
 
-  <!-- ✅ 로고 & 제목 영역 -->
   <header>
     <img id="logo" src="images/logo.png" alt="로고">
     <h1>💙 펫프레소 반려동물 프로필 사진 💙</h1>
@@ -120,7 +110,43 @@
     </a>
   </div>
 
-  <script src="js/viewer.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get("id");
+    const container = document.getElementById("image-container");
+
+    async function loadImage() {
+      try {
+        const res = await fetch("/list");
+        const data = await res.json();
+
+        if (!data[userId] || !data[userId].files || data[userId].files.length === 0) {
+          container.innerHTML = '<p style="color: white;">이미지를 찾을 수 없습니다.</p>';
+          return;
+        }
+
+        const latestFile = data[userId].files[data[userId].files.length - 1];
+        const imageUrl = `/images/${latestFile}`;
+
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = "프로필 이미지";
+
+        container.innerHTML = "";
+        container.appendChild(img);
+
+        const link = document.getElementById("download-link");
+        link.href = imageUrl;
+        document.getElementById("download-button").style.display = "block";
+      } catch (err) {
+        console.error("이미지 로딩 오류:", err);
+        container.innerHTML = '<p style="color: white;">이미지를 불러오는 데 실패했습니다.</p>';
+      }
+    }
+
+    loadImage();
+  </script>
+
 </body>
 
 </html>
