@@ -16,16 +16,22 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
-      padding: 0 0 40px;
+      padding: 0;
       font-family: 'NanumSquareRound', 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #b3d3ff, #d3b6ff);
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
       min-height: 100vh;
+      padding-bottom: 40px;
       text-align: center;
     }
 
@@ -34,58 +40,61 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 100%;
     }
 
     #logo {
-      height: 100px;
+      height: 90px;
       margin-bottom: 10px;
     }
 
     h1 {
       background: rgba(255, 255, 255, 0.25);
-      padding: 16px 32px;
+      padding: 14px 20px;
       border-radius: 30px;
       color: #fff;
-      font-size: 1.8rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-      max-width: 90vw;
+      font-size: 1.6rem;
+      max-width: 90%;
+      word-break: keep-all;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
     }
 
     #image-container {
-      margin-top: 30px;
+      margin-top: 24px;
       width: 100%;
-      padding: 0 20px;
+      padding: 0 16px;
       display: flex;
       justify-content: center;
-      align-items: center;
-      flex-direction: column;
     }
 
     #image-container img {
-      width: 100%;
+      width: 80%;
       height: auto;
-      border-radius: 20px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      max-width: 360px;
+      border-radius: 16px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
     }
 
     #download-button {
-      margin-top: 30px;
+      margin-top: 24px;
       display: none;
       flex-direction: column;
       align-items: center;
+      width: 100%;
+      max-width: 360px;
     }
 
     #download-button button {
       background: linear-gradient(135deg, #7d77ff, #a072ff);
       color: white;
       border: none;
-      padding: 16px 48px;
+      padding: 14px 36px;
       border-radius: 999px;
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
@@ -98,51 +107,45 @@
     }
 
     #mobile-hint {
-  margin-top: 20px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #ffffff;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 10px 16px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  max-width: 90vw;
-  line-height: 1.5;
-}
-
-    @media (max-width: 767px) {
-      #image-container img {
-        max-width: 90vw;
-      }
-    }
-
-    @media (min-width: 768px) {
-      #image-container img {
-        max-width: 400px;
-      }
-      #mobile-hint {
-    display: none;
-  }
+      margin-top: 16px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 12px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 90%;
+      line-height: 1.5;
     }
 
     @media (max-width: 480px) {
       #logo {
-        height: 80px;
+        height: 72px;
       }
 
       h1 {
-        font-size: 1.1rem;
-        padding: 12px 20px;
+        font-size: 1.2rem;
+        padding: 10px 14px;
+      }
+
+      #image-container img {
+        max-width: 88vw;
       }
 
       #download-button button {
-        padding: 14px 32px;
-        font-size: 1rem;
+        padding: 12px 24px;
+        font-size: 0.95rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      #mobile-hint {
+        display: none;
       }
     }
   </style>
 </head>
-
 <body>
 
   <header>
@@ -187,11 +190,9 @@
 
         document.getElementById("download-button").style.display = "flex";
 
-        // 모바일 힌트 표시
         if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
           document.getElementById("mobile-hint").style.display = "block";
         }
-
       } catch (err) {
         console.error("이미지 로딩 오류:", err);
         container.innerHTML = '<p style="color: white;">이미지를 불러오는 데 실패했습니다.</p>';
@@ -199,13 +200,11 @@
     }
 
     function downloadImage() {
-      // 모바일이면 새 창으로 열기
       if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
         window.open(imageUrl, '_blank');
         return;
       }
 
-      // PC에서는 다운로드 실행
       fetch(imageUrl)
         .then(res => res.blob())
         .then(blob => {
@@ -226,6 +225,5 @@
 
     loadImage();
   </script>
-
 </body>
 </html>
