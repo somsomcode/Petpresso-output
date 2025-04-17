@@ -98,11 +98,17 @@
     }
 
     #mobile-hint {
-      margin-top: 12px;
-      font-size: 0.9rem;
-      color: white;
-      display: none;
-    }
+  margin-top: 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 90vw;
+  line-height: 1.5;
+}
 
     @media (max-width: 767px) {
       #image-container img {
@@ -114,6 +120,9 @@
       #image-container img {
         max-width: 400px;
       }
+      #mobile-hint {
+    display: none;
+  }
     }
 
     @media (max-width: 480px) {
@@ -122,7 +131,7 @@
       }
 
       h1 {
-        font-size: 1.3rem;
+        font-size: 1.1rem;
         padding: 12px 20px;
       }
 
@@ -147,7 +156,7 @@
 
   <div id="download-button">
     <button onclick="downloadImage()">이미지 다운로드</button>
-    <p id="mobile-hint">📱 이미지를 길게 눌러 저장해 주세요</p>
+    <p id="mobile-hint">📱 모바일에서는 이미지를 꾹 눌러 저장해 주세요</p>
   </div>
 
   <script>
