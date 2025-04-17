@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8">
   <title>Petpresso 반려동물 프로필 사진</title>
@@ -20,6 +19,7 @@
     body {
       margin: 0;
       padding: 0;
+      padding-bottom: 40px;
       font-family: 'NanumSquareRound', 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #b3d3ff, #d3b6ff);
       display: flex;
@@ -57,22 +57,34 @@
     }
 
     #image-container {
-    margin-top: 30px;
-    width: 100%;
-    max-width: 600px; /* ✅ 최대 너비 제한 */
-    padding: 0 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+      margin-top: 30px;
+      width: 100%;
+      padding: 0 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-  #image-container img {
-    width: 100%;
-    max-width: 90vw; /* ✅ 모바일에서 너무 커지지 않도록 제한 */
-    height: auto;
-    border-radius: 20px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
+    #image-container img {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ✅ 모바일 기본 이미지 최대 너비 */
+    @media (max-width: 767px) {
+      #image-container img {
+        max-width: 90vw;
+      }
+    }
+
+    /* ✅ 웹에서는 적당한 크기로 제한 */
+    @media (min-width: 768px) {
+      #image-container img {
+        max-width: 400px;
+      }
+    }
 
     #download-button {
       margin-top: 30px;
@@ -170,5 +182,4 @@
   </script>
 
 </body>
-
 </html>
