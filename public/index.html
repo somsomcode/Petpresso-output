@@ -14,6 +14,9 @@
     .item button {
       margin-left: 10px;
     }
+    #result button {
+      margin-left: 6px;
+    }
   </style>
 </head>
 <body>
@@ -26,9 +29,10 @@
   </form>
 
   <div id="result">
-    <p>✅ 업로드 완료! 아래 링크를 복사해 사용자에게 전달하세요:</p>
+    <p>✅ 업로드 완료! 아래 링크를 복사하거나 바로 확인하세요:</p>
     <input id="result-link" type="text" readonly style="width: 300px;">
     <button onclick="copyLink()">복사</button>
+    <button onclick="goToLink()">바로가기</button>
   </div>
 
   <h3 style="margin-top: 60px;">📂 업로드된 이미지 목록</h3>
@@ -54,8 +58,8 @@
         const url = `${window.location.origin}/view.html?id=${userId}`;
         resultInput.value = url;
         resultDiv.style.display = 'block';
-        form.reset(); // 업로드 후 입력 초기화
-        loadImageList(); // 리스트 갱신
+        form.reset();
+        loadImageList();
       } else {
         alert('❌ 업로드 실패! 서버 에러가 발생했습니다.');
       }
@@ -66,6 +70,11 @@
       input.select();
       document.execCommand('copy');
       alert('📋 링크가 복사되었습니다!');
+    }
+
+    function goToLink() {
+      const url = document.getElementById('result-link').value;
+      if (url) window.open(url, '_blank');
     }
 
     async function loadImageList() {
@@ -118,7 +127,6 @@
       }
     }
 
-    // 초기 실행
     loadImageList();
   </script>
 </body>
