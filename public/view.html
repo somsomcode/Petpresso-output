@@ -52,7 +52,7 @@
       background: rgba(255, 255, 255, 0.25);
       padding: 14px 20px;
       border-radius: 30px;
-      color: #fff;
+      color: #512aa6;
       font-size: 1.6rem;
       max-width: 90%;
       word-break: keep-all;
@@ -74,7 +74,7 @@
     #image-container img {
       width: 80%;
       height: auto;
-      max-width: 360px;
+      max-width: 300px;
       border-radius: 16px;
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
     }
@@ -108,7 +108,7 @@
 
     #mobile-hint {
       margin-top: 16px;
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       font-weight: bold;
       color: #ffffff;
       background: rgba(0, 0, 0, 0.3);
@@ -117,9 +117,10 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       max-width: 90%;
       line-height: 1.5;
+      display: none;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 767px) {
       #logo {
         height: 72px;
       }
@@ -130,12 +131,15 @@
       }
 
       #image-container img {
-        max-width: 88vw;
+        max-width: 78vw;
       }
 
       #download-button button {
-        padding: 12px 24px;
-        font-size: 0.95rem;
+        display: none; /* ✅ 모바일에서는 버튼 숨김 */
+      }
+
+      #mobile-hint {
+        display: block; /* ✅ 모바일에서는 안내 문구 표시 */
       }
     }
 
@@ -150,7 +154,7 @@
 
   <header>
     <img id="logo" src="images/logo.png" alt="로고">
-    <h1>💙 펫프레소 반려동물 프로필 사진 💙</h1>
+    <h1>💜 펫프레소 반려동물 프로필 사진 💜</h1>
   </header>
 
   <div id="image-container">
@@ -159,7 +163,7 @@
 
   <div id="download-button">
     <button onclick="downloadImage()">이미지 다운로드</button>
-    <p id="mobile-hint">📱 모바일에서는 이미지를 꾹 눌러 저장해 주세요</p>
+    <p id="mobile-hint">📱 모바일에서는 이미지를 꾹 눌러 저장해 주세요 📱</p>
   </div>
 
   <script>
@@ -189,10 +193,6 @@
         container.appendChild(img);
 
         document.getElementById("download-button").style.display = "flex";
-
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-          document.getElementById("mobile-hint").style.display = "block";
-        }
       } catch (err) {
         console.error("이미지 로딩 오류:", err);
         container.innerHTML = '<p style="color: white;">이미지를 불러오는 데 실패했습니다.</p>';
