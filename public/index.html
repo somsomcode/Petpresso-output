@@ -128,11 +128,11 @@
   </style>
 </head>
 <body>
-  <h2>사용자 전달용 이미지 업로드</h2>
+  <h2><펫프레소 결과물 전달용 링크 생성기></h2>
   <p style="max-width: 600px; margin: 10px auto 30px; font-size: 0.95em; color: #555; line-height: 1.6;">
-    <strong>1.</strong> 사용자 ID를 입력하고 (ID는 개별 URL 생성용 입니다.) <br>이미지를 선택한 후 '전달용 링크 생성하기'를 누르세요.<br>
-    <strong>2.</strong> 업로드가 완료되면 링크가 생성되며, 복사하거나 바로 확인할 수 있습니다.<br>
-    <strong>3.</strong> 아래 목록에서는 사용자별 업로드 내역과 링크를 확인하고 삭제할 수 있습니다.
+    <strong>1. 사용자 ID를 입력하고 (ID는 개별 URL 생성 구분용 입니다.) <br>이미지를 선택한 후 '전달용 링크 생성하기'를 누르세요.<br></strong>
+    <strong>2. 업로드가 완료되면 링크가 생성되며, 복사하거나 바로 확인할 수 있습니다.<br> </strong>
+    <strong>3. 아래 목록에서는 사용자별 업로드 내역과 링크를 확인하고 삭제할 수 있습니다. </strong>
   </p>
 
   <form id="upload-form" enctype="multipart/form-data">
@@ -204,13 +204,20 @@
           return;
         }
 
-        const html = Object.entries(data).map(([id, obj]) => {
-          const urls = obj.urls || [];
-          const files = obj.files || [];
+        const sortedEntries = Object.entries(data).sort((a, b) => {
+          const fileA = a[1]?.files?.[0] || '';
+          const fileB = b[1]?.files?.[0] || '';
+          return fileB.localeCompare(fileA);
+        });
 
-          const fileList = files.map(file => `
-            <div>📁 ${file}</div>
-          `).join('');
+        const html = sortedEntries.map(([id, obj]) => {
+          const urls = (obj.urls || []).slice().reverse();
+          const files = (obj.files || []).slice().reverse();
+
+          const fileList = files.map(file => {
+            const timeStr = extractTimeFromFilename(file);
+            return `<div>📁 ${file} <span style="color:#999;font-size:0.85em;">(${timeStr})</span></div>`;
+          }).join('');
 
           const urlList = urls.map(url => `
             <div>🔗 <a href="${url}" target="_blank">${url}</a></div>
@@ -235,6 +242,20 @@
         console.error('❌ 리스트 불러오기 실패:', error);
         listContainer.innerHTML = '<p>❌ 리스트 로딩 오류</p>';
       }
+    }
+
+    function extractTimeFromFilename(filename) {
+      const match = filename.match(/-(\d+)\./);
+      if (!match) return '';
+      const timestamp = Number(match[1]);
+      const date = new Date(timestamp);
+      return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
 
     async function deleteImage(id) {
