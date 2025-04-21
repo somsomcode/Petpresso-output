@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Petpresso 반려동물 프로필 사진</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     @font-face {
       font-family: 'NanumSquareRound';
       src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
     }
 
     * {
@@ -19,8 +19,7 @@
     html, body {
       margin: 0;
       padding: 0;
-      font-family: 'NanumSquareRound', 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #b3d3ff, #d3b6ff);
+      font-family: 'NanumSquareRound', sans-serif;
       width: 100%;
       max-width: 100%;
       overflow-x: hidden;
@@ -33,6 +32,50 @@
       min-height: 100vh;
       padding-bottom: 40px;
       text-align: center;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(270deg, #b3d3ff, #c29aff, #f3d3ff, #b3d3ff);
+      background-size: 400% 400%;
+      animation: gradientMove 18s ease infinite;
+      z-index: -1;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #lang-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    #lang-toggle button {
+      background: rgba(255, 255, 255, 0.6);
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      margin-left: 8px;
+      font-family: 'NanumSquareRound', sans-serif;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s ease;
+    }
+
+    #lang-toggle button:hover {
+      background: rgba(255, 255, 255, 0.9);
     }
 
     header {
@@ -49,34 +92,53 @@
     }
 
     h1 {
-      background: rgba(255, 255, 255, 0.25);
-      padding: 14px 20px;
-      border-radius: 30px;
-      color: #512aa6;
-      font-size: 1.6rem;
+      background: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(6px);
+      padding: 16px 28px;
+      border-radius: 50px;
+      color: #3c1e70;
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
       max-width: 90%;
-      word-break: keep-all;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 20px rgba(80, 80, 80, 0.15);
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    #image-container {
+    #image-qr-wrapper {
       margin-top: 24px;
-      width: 100%;
-      padding: 0 16px;
       display: flex;
       justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
     }
 
     #image-container img {
-      width: 80%;
-      height: auto;
+      width: 100%;
       max-width: 300px;
       border-radius: 16px;
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    #qr-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    #qr-wrapper p {
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      color: #444;
     }
 
     #download-button {
@@ -121,48 +183,40 @@
     }
 
     @media (max-width: 767px) {
-      #logo {
-        height: 72px;
-      }
-
-      h1 {
-        font-size: 1.2rem;
-        padding: 10px 14px;
-      }
-
-      #image-container img {
-        max-width: 78vw;
-      }
-
-      #download-button button {
-        display: none; /* ✅ 모바일에서는 버튼 숨김 */
-      }
-
-      #mobile-hint {
-        display: block; /* ✅ 모바일에서는 안내 문구 표시 */
-      }
-    }
-
-    @media (min-width: 768px) {
-      #mobile-hint {
-        display: none;
-      }
+      #logo { height: 72px; }
+      h1 { font-size: 1.2rem; padding: 10px 14px; }
+      #image-container img { max-width: 90vw; }
+      #image-qr-wrapper { flex-direction: column; gap: 20px; }
+      #download-button button { display: none; }
+      #mobile-hint { display: block; }
+      #qr-wrapper { display: none; }
     }
   </style>
 </head>
+
 <body>
 
+  <div id="lang-toggle">
+    <button onclick="setLang('ko')">한국어</button>
+    <button onclick="setLang('ja')">日本語</button>
+  </div>
+
   <header>
-    <img id="logo" src="images/logo.png" alt="로고">
-    <h1>💜 펫프레소 반려동물 프로필 사진 💜</h1>
+    <img id="logo" src="images/logo.png" alt="로고" />
+    <h1 id="main-title">💜 펫프레소 반려동물 프로필 사진 💜</h1>
   </header>
 
-  <div id="image-container">
-    <p style="color: white;">로딩 중입니다...</p>
+  <div id="image-qr-wrapper">
+    <div id="image-container">
+      <p style="color: white;">로딩 중입니다...</p>
+    </div>
+    <div id="qr-wrapper">
+      <div id="qrcode"></div>
+    </div>
   </div>
 
   <div id="download-button">
-    <button onclick="downloadImage()">이미지 다운로드</button>
+    <button id="download-btn" onclick="downloadImage()">이미지 다운로드</button>
     <p id="mobile-hint">📱 모바일에서는 이미지를 꾹 눌러 저장해 주세요 📱</p>
   </div>
 
@@ -191,8 +245,18 @@
 
         container.innerHTML = "";
         container.appendChild(img);
-
         document.getElementById("download-button").style.display = "flex";
+
+        const qrContainer = document.getElementById("qrcode");
+        qrContainer.innerHTML = "";
+        new QRCode(qrContainer, {
+          text: window.location.href,
+          width: 164,
+          height: 164,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
       } catch (err) {
         console.error("이미지 로딩 오류:", err);
         container.innerHTML = '<p style="color: white;">이미지를 불러오는 데 실패했습니다.</p>';
@@ -223,7 +287,24 @@
         });
     }
 
+    function setLang(lang) {
+      const title = document.getElementById("main-title");
+      const downloadBtn = document.getElementById("download-btn");
+      const mobileHint = document.getElementById("mobile-hint");
+
+      if (lang === 'ko') {
+        title.textContent = '💜 펫프레소 반려동물 프로필 사진 💜';
+        downloadBtn.textContent = '이미지 다운로드';
+        mobileHint.textContent = '📱 모바일에서는 이미지를 꾹 눌러 저장해 주세요 📱';
+      } else if (lang === 'ja') {
+        title.textContent = '💜 Petpresso ペットプロフィール写真 💜';
+        downloadBtn.textContent = '画像をダウンロード';
+        mobileHint.textContent = '📱 スマホでは画像を長押しして保存してください 📱';
+      }
+    }
+
     loadImage();
   </script>
 </body>
+
 </html>
