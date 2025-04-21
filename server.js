@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ (선택) 배포 URL 설정 (Render 등에서 환경변수로 지정 가능)
+// ✅ 배포 URL 설정 (Render 등에서 환경변수로 지정 가능)
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 app.use(express.json());
@@ -76,13 +76,24 @@ app.post('/upload', upload.single('image'), (req, res) => {
   res.json({ success: true, userId, link: viewUrl });
 });
 
-// ✅ 리스트 조회 API
+// ✅ 리스트 조회 API (가장 최근 것이 위로)
 app.get('/list', (req, res) => {
   const dataPath = path.join(__dirname, 'public/data.json');
   if (fs.existsSync(dataPath)) {
     try {
       const raw = fs.readFileSync(dataPath, 'utf8');
       const data = JSON.parse(raw);
+
+      // ✅ 각 사용자 데이터의 files와 urls를 최신순으로 정렬
+      for (const userId in data) {
+        if (Array.isArray(data[userId].files)) {
+          data[userId].files = [...data[userId].files].reverse();
+        }
+        if (Array.isArray(data[userId].urls)) {
+          data[userId].urls = [...data[userId].urls].reverse();
+        }
+      }
+
       return res.json(data);
     } catch (err) {
       console.error('❌ 리스트 파싱 오류:', err);
