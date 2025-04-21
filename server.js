@@ -4,10 +4,18 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+// ✅ (선택) 배포 URL 설정 (Render 등에서 환경변수로 지정 가능)
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 app.use(express.json());
 app.use(express.static('public'));
+
+// ✅ ping 라우트 (외부 ping 서비스에서 사용)
+app.get('/ping', (req, res) => {
+  res.send('pong');
+});
 
 // ✅ 이미지 저장 설정
 const upload = multer({
@@ -35,11 +43,10 @@ app.post('/upload', upload.single('image'), (req, res) => {
   }
 
   const fileName = req.file.filename;
-  const viewUrl = `/view.html?id=${userId}&img=${fileName}`; // ✅ 고유 URL 생성
+  const viewUrl = `/view.html?id=${userId}&img=${fileName}`;
   const dataPath = path.join(__dirname, 'public/data.json');
   let data = {};
 
-  // ✅ 기존 JSON 읽기
   if (fs.existsSync(dataPath)) {
     try {
       data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
@@ -48,20 +55,16 @@ app.post('/upload', upload.single('image'), (req, res) => {
     }
   }
 
-  // ✅ 사용자 데이터 초기화 (배열로 잘못된 경우까지 처리)
   if (!data[userId] || typeof data[userId] !== 'object' || Array.isArray(data[userId])) {
     data[userId] = { files: [], urls: [] };
   }
 
-  // ✅ 배열 보장
   if (!Array.isArray(data[userId].files)) data[userId].files = [];
   if (!Array.isArray(data[userId].urls)) data[userId].urls = [];
 
-  // ✅ 파일명과 URL 저장
   data[userId].files.push(fileName);
   data[userId].urls.push(viewUrl);
 
-  // ✅ 저장
   try {
     fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
     console.log(`✅ 저장 완료: ${userId} → ${fileName}`);
@@ -105,7 +108,6 @@ app.post('/delete', (req, res) => {
     return res.status(404).json({ success: false, message: '해당 사용자 없음' });
   }
 
-  // ✅ 이미지 파일 삭제
   record.files.forEach(filename => {
     const fullPath = path.join(__dirname, 'public/images', filename);
     if (fs.existsSync(fullPath)) {
@@ -113,7 +115,6 @@ app.post('/delete', (req, res) => {
     }
   });
 
-  // ✅ JSON 데이터에서 삭제
   delete data[userId];
   fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
   console.log(`🗑️ 삭제 완료: ${userId}`);
@@ -123,5 +124,5 @@ app.post('/delete', (req, res) => {
 
 // ✅ 서버 시작
 app.listen(PORT, () => {
-  console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
+  console.log(`🚀 서버 실행 중: ${BASE_URL}`);
 });
